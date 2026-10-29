@@ -1,6 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { AppScreen, InfoRow, SectionCard } from '@/components';
 import { apiConfig, appConfig } from '@/api';
+import { TarjetaNavegacion } from '@/features/catalog';
 import { colors, spacing, typography } from '@/theme';
 
 const included = [
@@ -12,8 +13,7 @@ const included = [
 ];
 
 const pending = [
-  'RF-05: catálogo público (espera endpoints del backend).',
-  'RF-03 y RF-04: equipos y jugadores (requieren rol ADMIN).',
+  'RF-03 y RF-04: alta, edición y baja de equipos y jugadores (requieren login ADMIN).',
   'RF-01: login y usuarios (a cargo de Franco).',
   'Partidos, eventos, tabla y suspendidos (José y Mateo).',
 ];
@@ -34,6 +34,17 @@ export default function HomeScreen() {
           pantallas de su módulo sin duplicar configuración compartida.
         </Text>
       </View>
+
+      <SectionCard title="Catálogo público" subtitle="RF-05 · sin necesidad de iniciar sesión">
+        <Text style={styles.listItem}>
+          Consultá torneos, equipos, jugadores, canchas y árbitros.
+        </Text>
+        <TarjetaNavegacion
+          href="/catalogo"
+          titulo="Abrir catálogo"
+          detalle="Información pública de la liga"
+        />
+      </SectionCard>
 
       <SectionCard title="Configuración actual" subtitle="Variables de entorno de Expo">
         <InfoRow label="API" value={apiConfig.baseUrl} />
