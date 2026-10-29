@@ -4,49 +4,48 @@ import { apiConfig, appConfig } from '@/api';
 import { TarjetaNavegacion } from '@/features/catalog';
 import { colors, spacing, typography } from '@/theme';
 
-const included = [
-  'Expo Router y navegación por archivos.',
-  'Cliente HTTP con manejo uniforme de errores.',
-  'Almacenamiento seguro del token JWT.',
-  'Tipos del contrato de catálogo, equipos y jugadores.',
-  'Tema y componentes visuales compartidos.',
-];
-
-const pending = [
-  'RF-03 y RF-04: alta, edición y baja de equipos y jugadores (requieren login ADMIN).',
-  'RF-01: login y usuarios (a cargo de Franco).',
-  'Partidos, eventos, tabla y suspendidos (José y Mateo).',
+const proximamente = [
+  'Iniciar sesión como administrador (RF-01).',
+  'Alta, edición y baja de equipos (RF-03) y jugadores (RF-04).',
+  'Partidos, eventos, tabla de posiciones y suspendidos.',
 ];
 
 /**
- * Pantalla inicial de la base móvil.
- * No consume endpoints todavía: solo muestra el estado de la configuración
- * y deja explícito qué falta implementar en el backend antes de cada pantalla.
+ * Pantalla inicial de la aplicación.
+ * Presenta los módulos disponibles y enlaza al catálogo público; los módulos
+ * que dependen de otros equipos se listan como próximos, sin adelantar pantallas.
  */
 export default function HomeScreen() {
   return (
     <AppScreen>
       <View style={styles.hero}>
-        <Text style={styles.eyebrow}>LIGA AMATEUR SANTAFESINA</Text>
-        <Text style={styles.title}>Base móvil</Text>
+        <Text style={styles.eyebrow}>TEMPORADA 2026</Text>
+        <Text style={styles.title}>Liga Amateur Santafesina</Text>
         <Text style={styles.description}>
-          Proyecto Expo + TypeScript preparado para que cada integrante agregue las
-          pantallas de su módulo sin duplicar configuración compartida.
+          Consultá los torneos, equipos, jugadores, canchas y árbitros de la liga.
         </Text>
       </View>
 
-      <SectionCard title="Catálogo público" subtitle="RF-05 · sin necesidad de iniciar sesión">
+      <SectionCard title="Módulos disponibles" subtitle="Funciones activas">
         <Text style={styles.listItem}>
-          Consultá torneos, equipos, jugadores, canchas y árbitros.
+          El catálogo público reúne la información de la liga sin necesidad de iniciar sesión.
         </Text>
         <TarjetaNavegacion
           href="/catalogo"
-          titulo="Abrir catálogo"
-          detalle="Información pública de la liga"
+          titulo="Catálogo público"
+          detalle="Torneos, equipos, jugadores, canchas y árbitros"
         />
       </SectionCard>
 
-      <SectionCard title="Configuración actual" subtitle="Variables de entorno de Expo">
+      <SectionCard title="Próximamente" subtitle="Dependen de otros módulos">
+        {proximamente.map((item) => (
+          <Text key={item} style={styles.listItem}>
+            • {item}
+          </Text>
+        ))}
+      </SectionCard>
+
+      <SectionCard title="Conexión" subtitle="Configuración de desarrollo">
         <InfoRow label="API" value={apiConfig.baseUrl} />
         <InfoRow label="Entorno" value={appConfig.environment} />
         <InfoRow
@@ -60,24 +59,8 @@ export default function HomeScreen() {
         />
       </SectionCard>
 
-      <SectionCard title="Incluido en esta base" subtitle="Infraestructura compartida">
-        {included.map((item) => (
-          <Text key={item} style={styles.listItem}>
-            • {item}
-          </Text>
-        ))}
-      </SectionCard>
-
-      <SectionCard title="Pendiente de backend" subtitle="No se adelantan pantallas sin contrato">
-        {pending.map((item) => (
-          <Text key={item} style={styles.listItem}>
-            • {item}
-          </Text>
-        ))}
-      </SectionCard>
-
       <Text style={styles.footer}>
-        Documentación del contrato: docs/API.md del repositorio backend.
+        Los datos se consultan en línea desde el backend de la liga.
       </Text>
     </AppScreen>
   );
