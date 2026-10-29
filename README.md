@@ -1,6 +1,6 @@
 # Liga Amateur Santafesina — app móvil
 
-Base de la aplicación React Native + Expo para el proyecto de Ingeniería de Software II. **Esta entrega contiene únicamente la infraestructura compartida**: navegación, configuración, cliente HTTP, almacenamiento del token, tipos del contrato y tema visual. Las pantallas de negocio se agregan a medida que el backend expone sus endpoints.
+Aplicación React Native + Expo para el proyecto de Ingeniería de Software II. La base incluye la infraestructura compartida —navegación, configuración, cliente HTTP, almacenamiento del token, tipos del contrato y tema visual— y el catálogo público (RF-05). Las demás pantallas de negocio se agregan a medida que el backend expone sus endpoints.
 
 ## Estado
 
@@ -51,7 +51,7 @@ npm run typecheck  # verifica TypeScript sin generar archivos
 isw2-g5-app/
 ├── app/                      # rutas de Expo Router
 │   ├── _layout.tsx           # stack raíz
-│   ├── index.tsx             # pantalla inicial / estado de la base
+│   ├── index.tsx             # inicio: módulos disponibles y conexión
 │   ├── catalogo/             # RF-05: menú y pantallas del catálogo
 │   │   ├── index.tsx         # menú del catálogo
 │   │   ├── canchas.tsx
