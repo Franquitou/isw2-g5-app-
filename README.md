@@ -9,7 +9,9 @@ Base de la aplicación React Native + Expo para el proyecto de Ingeniería de So
 - ✅ Token JWT en almacenamiento seguro (pendiente de conectar al login).
 - ✅ Tipos de catálogo, equipos y jugadores (contrato `docs/API.md` §5).
 - ✅ Tema y componentes base.
-- ⏳ Pantallas de negocio: no incluidas a propósito.
+- ✅ Catálogo público (RF-05): torneos, equipos, jugadores, canchas y árbitros.
+- ⏳ Alta, edición y baja de equipos y jugadores (RF-03/RF-04): requieren login ADMIN.
+- ⏳ Resto de las pantallas de negocio: se agregan cuando su endpoint esté disponible.
 
 ## Requisitos
 
@@ -50,6 +52,12 @@ isw2-g5-app/
 ├── app/                      # rutas de Expo Router
 │   ├── _layout.tsx           # stack raíz
 │   ├── index.tsx             # pantalla inicial / estado de la base
+│   ├── catalogo/             # RF-05: menú y pantallas del catálogo
+│   │   ├── index.tsx         # menú del catálogo
+│   │   ├── canchas.tsx
+│   │   ├── arbitros.tsx
+│   │   ├── torneos/          # listado de torneos y equipos por torneo
+│   │   └── equipos/          # jugadores por equipo
 │   └── +not-found.tsx
 ├── src/
 │   ├── api/                  # cliente HTTP, configuración y errores
@@ -79,6 +87,22 @@ El cliente:
 - usa un timeout de 15 segundos por defecto;
 - devuelve `undefined` en respuestas `204`.
 
+## Catálogo público (RF-05)
+
+La pantalla inicial enlaza a `/catalogo`, un menú con las consultas públicas del contrato:
+
+| Pantalla | Endpoint |
+| --- | --- |
+| Torneos | `GET /api/torneos` |
+| Equipos de un torneo | `GET /api/torneos/{torneoId}/equipos` |
+| Jugadores de un equipo | `GET /api/equipos/{equipoId}/jugadores` |
+| Canchas | `GET /api/canchas` |
+| Árbitros | `GET /api/arbitros` |
+
+Todas las llamadas usan `auth: false` porque el backend las expone sin token. Cada pantalla maneja carga, error con reintento y listado vacío mediante `useListaCatalogo` y `ListaCatalogo`.
+
+El alta, la edición y la baja de equipos y jugadores (RF-03/RF-04) se agregan cuando exista el login (RF-01), porque el backend exige rol ADMIN.
+
 ## Autenticación
 
 `src/auth/tokenStorage.ts` guarda el token con `expo-secure-store` en Android/iOS y `localStorage` en web. El login (RF-01) y el contexto de sesión los implementa Franco; esta base solo deja el almacenamiento y el envío del token preparados.
@@ -94,7 +118,8 @@ El cliente:
 ## Qué no incluye (a propósito)
 
 - Login y gestión de usuarios.
-- Pantallas de catálogo, equipos, jugadores, partidos, eventos, tabla o suspendidos.
+- Escrituras de equipos y jugadores (RF-03/RF-04).
+- Pantallas de partidos, eventos, tabla o suspendidos.
 - Lógica de negocio duplicada: las reglas RN se validan en el backend.
 
 Cada una se agrega cuando su endpoint esté disponible y acordado.

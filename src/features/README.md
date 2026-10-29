@@ -7,9 +7,9 @@ Esta carpeta está pensada para que cada integrante agregue su módulo **sin pis
 | Carpeta sugerida | Integrante | Alcance |
 |---|---|---|
 | `src/features/auth/` | Franco (A) | Login, sesión, usuarios y permisos. |
-| `src/features/catalog/` | Marcos (B) | Torneo, canchas, árbitros y catálogo público. |
-| `src/features/teams/` | Marcos (B) | Equipos (RF-03). |
-| `src/features/players/` | Marcos (B) | Jugadores (RF-04). |
+| `src/features/catalog/` | Marcos (B) | Catálogo público (RF-05): torneos, equipos, jugadores, canchas y árbitros. |
+| `src/features/teams/` | Marcos (B) | ABM de equipos (RF-03); pendiente del login ADMIN. |
+| `src/features/players/` | Marcos (B) | ABM de jugadores (RF-04); pendiente del login ADMIN. |
 | `src/features/matches/` | José (C) | Partidos, estados y listado por fecha. |
 | `src/features/events/` | Mateo (D) | Eventos del partido y detalle. |
 | `src/features/standings/` | Mateo (D) | Tabla de posiciones y suspendidos. |
