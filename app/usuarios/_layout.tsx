@@ -1,0 +1,14 @@
+import { Redirect, Stack } from 'expo-router';
+import { ActivityIndicator } from 'react-native';
+import { useSession } from '@/auth/SessionContext';
+import { AppScreen } from '@/components';
+import { colors } from '@/theme';
+
+/** Protección visual de RF-02: ADMIN únicamente; el backend vuelve a verificar el rol. */
+export default function UsuariosLayout() {
+  const { session, loading } = useSession();
+  if (loading) return <AppScreen><ActivityIndicator color={colors.primary} /></AppScreen>;
+  if (!session) return <Redirect href="/login" />;
+  if (session.rol !== 'ADMIN') return <Redirect href="/" />;
+  return <Stack screenOptions={{ headerShown: false }} />;
+}
