@@ -2,10 +2,10 @@ import { StyleSheet, Text, View } from 'react-native';
 import { AppScreen, InfoRow, SectionCard } from '@/components';
 import { apiConfig, appConfig } from '@/api';
 import { TarjetaNavegacion } from '@/features/catalog';
+import { SessionActions } from '@/features/auth/components/SessionActions';
 import { colors, spacing, typography } from '@/theme';
 
 const proximamente = [
-  'Iniciar sesión como administrador (RF-01).',
   'Alta, edición y baja de equipos (RF-03) y jugadores (RF-04).',
   'Partidos, eventos, tabla de posiciones y suspendidos.',
 ];
@@ -36,6 +36,8 @@ export default function HomeScreen() {
           detalle="Torneos, equipos, jugadores, canchas y árbitros"
         />
       </SectionCard>
+
+      <SessionActions />
 
       <SectionCard title="Próximamente" subtitle="Dependen de otros módulos">
         {proximamente.map((item) => (

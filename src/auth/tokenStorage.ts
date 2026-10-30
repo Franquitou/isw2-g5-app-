@@ -13,6 +13,16 @@ import * as SecureStore from 'expo-secure-store';
  */
 
 const TOKEN_KEY = 'liga_amateur.access_token';
+const SESSION_KEY = 'liga_amateur.session';
+
+/** Datos mínimos de sesión para restaurar la navegación sin guardar contraseñas. */
+export interface StoredSession {
+  token: string;
+  username: string;
+  nombreCompleto: string;
+  rol: 'ADMIN' | 'DELEGADO';
+  expiresAt: number;
+}
 
 interface WebStorage {
   getItem(key: string): string | null;
@@ -25,25 +35,86 @@ function getWebStorage(): WebStorage | null {
   return candidate ?? null;
 }
 
+async function readValue(key: string): Promise<string | null> {
+  if (Platform.OS === 'web') {
+    return getWebStorage()?.getItem(key) ?? null;
+  }
+  return SecureStore.getItemAsync(key);
+}
+
+async function writeValue(key: string, value: string): Promise<void> {
+  if (Platform.OS === 'web') {
+    getWebStorage()?.setItem(key, value);
+    return;
+  }
+  await SecureStore.setItemAsync(key, value);
+}
+
+async function deleteValue(key: string): Promise<void> {
+  if (Platform.OS === 'web') {
+    getWebStorage()?.removeItem(key);
+    return;
+  }
+  await SecureStore.deleteItemAsync(key);
+}
+
+/** Restaura la sesión persistida; elimina tokens vencidos o datos incompletos. */
+export async function getStoredSession(): Promise<StoredSession | null> {
+  const token = await readValue(TOKEN_KEY);
+  const raw = await readValue(SESSION_KEY);
+  if (!token || !raw) {
+    if (token || raw) await clearAccessToken();
+    return null;
+  }
+  try {
+    const data: unknown = JSON.parse(raw);
+    if (typeof data !== 'object' || data === null) throw new Error('Sesión inválida');
+    const session = data as Omit<StoredSession, 'token'>;
+    if (
+      typeof session.username !== 'string' ||
+      typeof session.nombreCompleto !== 'string' ||
+      (session.rol !== 'ADMIN' && session.rol !== 'DELEGADO') ||
+      typeof session.expiresAt !== 'number' ||
+      !Number.isFinite(session.expiresAt) ||
+      session.expiresAt <= Date.now()
+    ) {
+      throw new Error('Sesión vencida o inválida');
+    }
+    return { ...session, token };
+  } catch {
+    await clearAccessToken();
+    return null;
+  }
+}
+
+/** El cliente HTTP usa el token solamente mientras la sesión local siga vigente. */
 export async function getAccessToken(): Promise<string | null> {
-  if (Platform.OS === 'web') {
-    return getWebStorage()?.getItem(TOKEN_KEY) ?? null;
-  }
-  return SecureStore.getItemAsync(TOKEN_KEY);
+  return (await getStoredSession())?.token ?? null;
 }
 
+/** Mantiene la función existente para el almacenamiento seguro del JWT. */
 export async function setAccessToken(token: string): Promise<void> {
-  if (Platform.OS === 'web') {
-    getWebStorage()?.setItem(TOKEN_KEY, token);
-    return;
-  }
-  await SecureStore.setItemAsync(TOKEN_KEY, token);
+  await writeValue(TOKEN_KEY, token);
 }
 
-export async function clearAccessToken(): Promise<void> {
-  if (Platform.OS === 'web') {
-    getWebStorage()?.removeItem(TOKEN_KEY);
-    return;
+/** Guarda token y perfil de navegación en el almacenamiento de la plataforma. */
+export async function saveSession(session: StoredSession): Promise<void> {
+  try {
+    await setAccessToken(session.token);
+    await writeValue(SESSION_KEY, JSON.stringify({
+      username: session.username,
+      nombreCompleto: session.nombreCompleto,
+      rol: session.rol,
+      expiresAt: session.expiresAt,
+    }));
+  } catch (error) {
+    await clearAccessToken();
+    throw error;
   }
-  await SecureStore.deleteItemAsync(TOKEN_KEY);
+}
+
+/** Cierre de sesión local; no existe endpoint de logout en la especificación. */
+export async function clearAccessToken(): Promise<void> {
+  await deleteValue(TOKEN_KEY);
+  await deleteValue(SESSION_KEY);
 }

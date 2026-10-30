@@ -6,11 +6,11 @@ Aplicación React Native + Expo para el proyecto de Ingeniería de Software II. 
 
 - ✅ Expo + TypeScript + Expo Router.
 - ✅ Cliente API con manejo uniforme de errores (`ApiErrorResponse`).
-- ✅ Token JWT en almacenamiento seguro (pendiente de conectar al login).
+- ✅ Login RF-01, sesión recuperable y token JWT en almacenamiento seguro Android/iOS.
 - ✅ Tipos de catálogo, equipos y jugadores (contrato `docs/API.md` §5).
 - ✅ Tema y componentes base.
 - ✅ Catálogo público (RF-05): torneos, equipos, jugadores, canchas y árbitros.
-- ⏳ Alta, edición y baja de equipos y jugadores (RF-03/RF-04): requieren login ADMIN.
+- ⏳ Pantallas de alta, edición y baja de equipos y jugadores (RF-03/RF-04): a cargo del módulo B.
 - ⏳ Resto de las pantallas de negocio: se agregan cuando su endpoint esté disponible.
 
 ## Requisitos
@@ -105,7 +105,7 @@ El alta, la edición y la baja de equipos y jugadores (RF-03/RF-04) se agregan c
 
 ## Autenticación
 
-`src/auth/tokenStorage.ts` guarda el token con `expo-secure-store` en Android/iOS y `localStorage` en web. El login (RF-01) y el contexto de sesión los implementa Franco; esta base solo deja el almacenamiento y el envío del token preparados.
+`app/login.tsx` consume `POST /api/auth/login` sin token previo. `src/auth/SessionContext.tsx` mantiene la sesión y restaura usuario, nombre, rol y vencimiento al abrir la app. `src/auth/tokenStorage.ts` guarda token y perfil (sin contraseña) con `expo-secure-store` en Android/iOS; en web usa `localStorage`, que no ofrece seguridad equivalente. El JWT dura ocho horas; si vence o una solicitud protegida recibe 401, se elimina la sesión. El catálogo sigue disponible sin login y el acceso visual a usuarios se muestra solo a ADMIN. El backend verifica todos los permisos.
 
 ## Trabajo en equipo
 
@@ -117,7 +117,7 @@ El alta, la edición y la baja de equipos y jugadores (RF-03/RF-04) se agregan c
 
 ## Qué no incluye (a propósito)
 
-- Login y gestión de usuarios.
+- Gestión de usuarios (RF-02): se agrega en un incremento separado.
 - Escrituras de equipos y jugadores (RF-03/RF-04).
 - Pantallas de partidos, eventos, tabla o suspendidos.
 - Lógica de negocio duplicada: las reglas RN se validan en el backend.
