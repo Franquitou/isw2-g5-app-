@@ -14,6 +14,13 @@ export interface ApiRequestOptions {
 
 const DEFAULT_TIMEOUT_MS = 15_000;
 
+let unauthorizedHandler: ((token: string | null) => Promise<void>) | null = null;
+
+/** Permite al módulo de sesión reaccionar a un 401 de una operación protegida. */
+export function setUnauthorizedHandler(handler: typeof unauthorizedHandler): void {
+  unauthorizedHandler = handler;
+}
+
 function normalizePath(path: string): string {
   const trimmed = path.trim();
   if (trimmed.length === 0) {
@@ -88,6 +95,13 @@ export async function apiRequest<T>(path: string, options: ApiRequestOptions = {
     const parsedBody = rawBody.length > 0 ? parseJson(rawBody) : null;
 
     if (!response.ok) {
+      if (auth && response.status === 401 && unauthorizedHandler) {
+        try {
+          await unauthorizedHandler(token);
+        } catch {
+          // La respuesta original 401 debe prevalecer incluso si falla el almacenamiento local.
+        }
+      }
       throw toApiError(response.status, parsedBody);
     }
 
