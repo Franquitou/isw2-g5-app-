@@ -12,6 +12,7 @@ interface SessionContextValue {
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateName: (nombreCompleto: string) => Promise<void>;
 }
 
 const SessionContext = createContext<SessionContextValue | null>(null);
@@ -51,7 +52,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!session) return;
-    const timeout = setTimeout(() => { void logout(); }, Math.max(0, session.expiresAt - Date.now()));
+    const timeout = setTimeout(() => { void logout().catch(() => {}); }, Math.max(0, session.expiresAt - Date.now()));
     return () => clearTimeout(timeout);
   }, [logout, session]);
 
@@ -68,7 +69,18 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     setSession(next);
   }, []);
 
-  const value = useMemo(() => ({ session, loading, login, logout }), [session, loading, login, logout]);
+  /** Refleja el cambio de nombre de la propia cuenta sin alterar el token ni el rol. */
+  const updateName = useCallback(async (nombreCompleto: string) => {
+    if (!session) return;
+    const updated = { ...session, nombreCompleto };
+    await saveSession(updated);
+    setSession(updated);
+  }, [session]);
+
+  const value = useMemo(
+    () => ({ session, loading, login, logout, updateName }),
+    [session, loading, login, logout, updateName],
+  );
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
 }
 
