@@ -1,6 +1,10 @@
 export { EncabezadoCatalogo } from './components/EncabezadoCatalogo';
+export { EquipoForm } from './components/EquipoForm';
 export { ItemCatalogo } from './components/ItemCatalogo';
+export { JugadorForm } from './components/JugadorForm';
 export { ListaCatalogo } from './components/ListaCatalogo';
 export { TarjetaNavegacion } from './components/TarjetaNavegacion';
 export { useListaCatalogo } from './hooks/useListaCatalogo';
+export { catalogAdminError } from './services/catalogAdminError';
 export { catalogApi } from './services/catalogApi';
+export { equiposApi } from './services/equiposApi';

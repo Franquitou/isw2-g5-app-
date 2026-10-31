@@ -11,7 +11,7 @@ Aplicación React Native + Expo para el proyecto de Ingeniería de Software II. 
 - ✅ Tipos de catálogo, equipos y jugadores (contrato `docs/API.md` §5).
 - ✅ Tema y componentes base.
 - ✅ Catálogo público (RF-05): torneos, equipos, jugadores, canchas y árbitros.
-- ⏳ Pantallas de alta, edición y baja de equipos y jugadores (RF-03/RF-04): a cargo del módulo B.
+- ✅ Gestión ADMIN de equipos (RF-03) y jugadores (RF-04): listado por torneo, alta, edición y baja lógica.
 - ⏳ Resto de las pantallas de negocio: se agregan cuando su endpoint esté disponible.
 
 ## Requisitos
@@ -53,12 +53,15 @@ isw2-g5-app/
 ├── app/                      # rutas de Expo Router
 │   ├── _layout.tsx           # stack raíz
 │   ├── index.tsx             # inicio: módulos disponibles y conexión
+│   ├── login.tsx             # RF-01: inicio de sesión
 │   ├── catalogo/             # RF-05: menú y pantallas del catálogo
 │   │   ├── index.tsx         # menú del catálogo
 │   │   ├── canchas.tsx
 │   │   ├── arbitros.tsx
 │   │   ├── torneos/          # listado de torneos y equipos por torneo
 │   │   └── equipos/          # jugadores por equipo
+│   ├── usuarios/             # RF-02: gestión ADMIN de usuarios
+│   ├── equipos/              # RF-03/RF-04: gestión ADMIN de equipos y jugadores
 │   └── +not-found.tsx
 ├── src/
 │   ├── api/                  # cliente HTTP, configuración y errores
@@ -102,7 +105,22 @@ La pantalla inicial enlaza a `/catalogo`, un menú con las consultas públicas d
 
 Todas las llamadas usan `auth: false` porque el backend las expone sin token. Cada pantalla maneja carga, error con reintento y listado vacío mediante `useListaCatalogo` y `ListaCatalogo`.
 
-El alta, la edición y la baja de equipos y jugadores (RF-03/RF-04) se agregan cuando exista el login (RF-01), porque el backend exige rol ADMIN.
+El alta, la edición y la baja de equipos y jugadores (RF-03/RF-04) están en la sección administrativa `/equipos`, disponible solo para ADMIN porque el backend exige ese rol en las escrituras.
+
+## Gestión de equipos y jugadores (RF-03/RF-04)
+
+Un ADMIN accede desde el inicio a `/equipos`. La pantalla elige el torneo activo y lista sus equipos; cada equipo abre un detalle con su plantel.
+
+| Acción | Endpoint |
+| --- | --- |
+| Alta de equipo | `POST /api/torneos/{torneoId}/equipos` |
+| Edición de equipo | `PUT /api/equipos/{id}` |
+| Baja lógica de equipo | `DELETE /api/equipos/{id}` |
+| Alta de jugador | `POST /api/equipos/{equipoId}/jugadores` |
+| Edición de jugador | `PUT /api/jugadores/{id}` |
+| Baja lógica de jugador | `DELETE /api/jugadores/{id}` |
+
+Las lecturas siguen usando los endpoints públicos de RF-05. El formulario valida longitudes y rangos antes de enviar, pero el backend es la autoridad final. La baja es lógica: el registro deja de listarse y no se puede reactivar desde la app. El equipo de un jugador y el torneo de un equipo no se pueden cambiar desde la edición, tal como define el contrato.
 
 ## Autenticación
 
@@ -122,7 +140,6 @@ Desde el inicio, un ADMIN accede a `/usuarios`. El módulo en `src/features/user
 
 ## Qué no incluye (a propósito)
 
-- Escrituras de equipos y jugadores (RF-03/RF-04).
 - Pantallas de partidos, eventos, tabla o suspendidos.
 - Lógica de negocio duplicada: las reglas RN se validan en el backend.
 
