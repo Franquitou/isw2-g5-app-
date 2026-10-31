@@ -1,6 +1,6 @@
 # Liga Amateur Santafesina — app móvil
 
-Aplicación React Native + Expo para el proyecto de Ingeniería de Software II. La base incluye la infraestructura compartida —navegación, configuración, cliente HTTP, almacenamiento del token, tipos del contrato y tema visual— y el catálogo público (RF-05). Las demás pantallas de negocio se agregan a medida que el backend expone sus endpoints.
+Aplicación React Native + Expo para el proyecto de Ingeniería de Software II. La base incluye la infraestructura compartida —navegación, configuración, cliente HTTP, almacenamiento del token, tipos del contrato y tema visual—, el catálogo público (RF-05) y la gestión de partidos, eventos, tabla y suspendidos (RF-06 a RF-12).
 
 ## Estado
 
@@ -12,7 +12,7 @@ Aplicación React Native + Expo para el proyecto de Ingeniería de Software II. 
 - ✅ Tema y componentes base.
 - ✅ Catálogo público (RF-05): torneos, equipos, jugadores, canchas y árbitros.
 - ✅ Gestión ADMIN de equipos (RF-03) y jugadores (RF-04): listado por torneo, alta, edición y baja lógica.
-- ⏳ Resto de las pantallas de negocio: se agregan cuando su endpoint esté disponible.
+- ✅ Partidos y resultados (RF-06 a RF-12): fixture por jornada, detalle con eventos, alta/edición/baja de partidos, cambio de estado, registro de eventos, tabla de posiciones y suspendidos.
 
 ## Requisitos
 
@@ -62,6 +62,7 @@ isw2-g5-app/
 │   │   └── equipos/          # jugadores por equipo
 │   ├── usuarios/             # RF-02: gestión ADMIN de usuarios
 │   ├── equipos/              # RF-03/RF-04: gestión ADMIN de equipos y jugadores
+│   ├── partidos/             # RF-06 a RF-12: fixture, detalle, tabla y suspendidos
 │   └── +not-found.tsx
 ├── src/
 │   ├── api/                  # cliente HTTP, configuración y errores
@@ -122,6 +123,25 @@ Un ADMIN accede desde el inicio a `/equipos`. La pantalla elige el torneo activo
 
 Las lecturas siguen usando los endpoints públicos de RF-05. El formulario valida longitudes y rangos antes de enviar, pero el backend es la autoridad final. La baja es lógica: el registro deja de listarse y no se puede reactivar desde la app. El equipo de un jugador y el torneo de un equipo no se pueden cambiar desde la edición, tal como define el contrato.
 
+## Partidos, resultados, tabla y suspendidos (RF-06 a RF-12)
+
+La sección `/partidos` es pública: cualquier visitante elige torneo y jornada, ve el fixture con el resultado derivado de los eventos y abre el detalle de cada partido. Desde ahí también se accede a la tabla de posiciones y a los suspendidos de la jornada.
+
+| Pantalla | Endpoint | Acceso |
+| --- | --- | --- |
+| Fixture por jornada | `GET /api/torneos/{torneoId}/partidos?numeroFecha=N` | Público |
+| Detalle con eventos | `GET /api/partidos/{id}` | Público |
+| Tabla de posiciones | `GET /api/torneos/{torneoId}/tabla` | Público |
+| Suspendidos | `GET /api/torneos/{torneoId}/suspendidos?numeroFecha=N` | Público |
+| Alta de partido | `POST /api/partidos` | ADMIN |
+| Edición de partido | `PUT /api/partidos/{id}` | ADMIN |
+| Baja de partido | `DELETE /api/partidos/{id}` | ADMIN |
+| Cambio de estado | `PATCH /api/partidos/{id}/estado` | ADMIN o DELEGADO |
+| Alta de evento | `POST /api/partidos/{partidoId}/eventos` | ADMIN o DELEGADO |
+| Baja de evento | `DELETE /api/partidos/{partidoId}/eventos/{eventoId}` | ADMIN o DELEGADO |
+
+El formulario de partido elige torneo, equipos, cancha y árbitro desde los catálogos públicos, y envía la fecha con el offset de Santa Fe (`-03:00`). Las transiciones de estado y los eventos se validan en el backend: la app solo muestra las acciones permitidas para cada estado y rol. El marcador y la tabla no se cargan a mano; se derivan de los eventos `GOL` y de los partidos `FINALIZADO`.
+
 ## Autenticación
 
 `app/login.tsx` consume `POST /api/auth/login` sin token previo. `src/auth/SessionContext.tsx` mantiene la sesión y restaura usuario, nombre, rol y vencimiento al abrir la app. `src/auth/tokenStorage.ts` guarda token y perfil (sin contraseña) con `expo-secure-store` en Android/iOS; en web usa `localStorage`, que no ofrece seguridad equivalente. El JWT dura ocho horas; si vence o una solicitud protegida recibe 401, se elimina la sesión. El catálogo sigue disponible sin login y el acceso visual a usuarios se muestra solo a ADMIN. El backend verifica todos los permisos.
@@ -140,7 +160,6 @@ Desde el inicio, un ADMIN accede a `/usuarios`. El módulo en `src/features/user
 
 ## Qué no incluye (a propósito)
 
-- Pantallas de partidos, eventos, tabla o suspendidos.
 - Lógica de negocio duplicada: las reglas RN se validan en el backend.
 
-Cada una se agrega cuando su endpoint esté disponible y acordado.
+Cada módulo nuevo se agrega cuando su endpoint esté disponible y acordado.

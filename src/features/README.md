@@ -7,12 +7,8 @@ Esta carpeta está pensada para que cada integrante agregue su módulo **sin pis
 | Carpeta sugerida | Integrante | Alcance |
 |---|---|---|
 | `src/features/auth/` | Franco (A) | Login, sesión, usuarios y permisos. |
-| `src/features/catalog/` | Marcos (B) | Catálogo público (RF-05): torneos, equipos, jugadores, canchas y árbitros. |
-| `src/features/teams/` | Marcos (B) | ABM de equipos (RF-03); pendiente del login ADMIN. |
-| `src/features/players/` | Marcos (B) | ABM de jugadores (RF-04); pendiente del login ADMIN. |
-| `src/features/matches/` | José (C) | Partidos, estados y listado por fecha. |
-| `src/features/events/` | Mateo (D) | Eventos del partido y detalle. |
-| `src/features/standings/` | Mateo (D) | Tabla de posiciones y suspendidos. |
+| `src/features/catalog/` | Marcos (B) | Catálogo público (RF-05), equipos (RF-03) y jugadores (RF-04). |
+| `src/features/partidos/` | José (C) y Mateo (D) | Partidos, estados, eventos, tabla y suspendidos (RF-06 a RF-12). |
 
 ## Reglas
 
@@ -26,13 +22,18 @@ Esta carpeta está pensada para que cada integrante agregue su módulo **sin pis
 ## Estructura sugerida para un módulo
 
 ```text
-src/features/equipos/
+src/features/partidos/
 ├── components/
-│   └── EquipoCard.tsx
-├── hooks/
-│   └── useEquipos.ts
-└── services/
-    └── equiposApi.ts
+│   ├── EstadoBadge.tsx
+│   ├── EventoForm.tsx
+│   ├── PartidoCard.tsx
+│   └── PartidoForm.tsx
+├── services/
+│   ├── partidoError.ts
+│   └── partidosApi.ts
+└── utils/
+    ├── confirmarAccion.ts
+    └── partidoLabels.ts
 ```
 
 Las rutas públicas o privadas se agregan en `app/` cuando el backend esté listo.

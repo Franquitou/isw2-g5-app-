@@ -5,14 +5,9 @@ import { TarjetaNavegacion } from '@/features/catalog';
 import { SessionActions } from '@/features/auth/components/SessionActions';
 import { colors, spacing, typography } from '@/theme';
 
-const proximamente = [
-  'Partidos, eventos, tabla de posiciones y suspendidos.',
-];
-
 /**
  * Pantalla inicial de la aplicación.
- * Presenta los módulos disponibles y enlaza al catálogo público; los módulos
- * que dependen de otros equipos se listan como próximos, sin adelantar pantallas.
+ * Presenta los módulos disponibles y enlaza al catálogo público y a los partidos.
  */
 export default function HomeScreen() {
   return (
@@ -21,7 +16,7 @@ export default function HomeScreen() {
         <Text style={styles.eyebrow}>TEMPORADA 2026</Text>
         <Text style={styles.title}>Liga Amateur Santafesina</Text>
         <Text style={styles.description}>
-          Consultá los torneos, equipos, jugadores, canchas y árbitros de la liga.
+          Consultá los torneos, equipos, jugadores, canchas, árbitros y partidos de la liga.
         </Text>
       </View>
 
@@ -34,17 +29,14 @@ export default function HomeScreen() {
           titulo="Catálogo público"
           detalle="Torneos, equipos, jugadores, canchas y árbitros"
         />
+        <TarjetaNavegacion
+          href="/partidos"
+          titulo="Partidos y resultados"
+          detalle="Fixture, resultados, tabla de posiciones y suspendidos"
+        />
       </SectionCard>
 
       <SessionActions />
-
-      <SectionCard title="Próximamente" subtitle="Dependen de otros módulos">
-        {proximamente.map((item) => (
-          <Text key={item} style={styles.listItem}>
-            • {item}
-          </Text>
-        ))}
-      </SectionCard>
 
       <SectionCard title="Conexión" subtitle="Configuración de desarrollo">
         <InfoRow label="API" value={apiConfig.baseUrl} />
