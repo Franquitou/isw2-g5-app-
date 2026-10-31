@@ -6,7 +6,6 @@ import { SessionActions } from '@/features/auth/components/SessionActions';
 import { colors, spacing, typography } from '@/theme';
 
 const proximamente = [
-  'Alta, edición y baja de equipos (RF-03) y jugadores (RF-04).',
   'Partidos, eventos, tabla de posiciones y suspendidos.',
 ];
 

@@ -27,11 +27,18 @@ export function SessionActions() {
     <SectionCard title="Sesión" subtitle={`${session.nombreCompleto} · ${session.rol}`}>
       <View style={styles.actions}>
         {session.rol === 'ADMIN' ? (
-          <Link href="/usuarios" asChild>
-            <Pressable style={styles.action} accessibilityRole="button">
-              <Text style={styles.actionText}>Administrar usuarios</Text>
-            </Pressable>
-          </Link>
+          <>
+            <Link href="/usuarios" asChild>
+              <Pressable style={styles.action} accessibilityRole="button">
+                <Text style={styles.actionText}>Administrar usuarios</Text>
+              </Pressable>
+            </Link>
+            <Link href="/equipos" asChild>
+              <Pressable style={styles.action} accessibilityRole="button">
+                <Text style={styles.actionText}>Administrar equipos y jugadores</Text>
+              </Pressable>
+            </Link>
+          </>
         ) : null}
         <Pressable
           style={styles.secondary}
